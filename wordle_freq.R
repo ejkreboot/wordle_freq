@@ -1,3 +1,6 @@
+library(ggplot2)
+library(reshape2)
+
 dict <- readLines("wordle_dictionary.txt")
 
 dict <- gsub("\"", "", dict)
@@ -12,14 +15,16 @@ b <- as.vector(sapply(choices, substr, 2, 2))
 c <- as.vector(sapply(choices, substr, 3, 3))
 d <- c("q", as.vector(sapply(choices, substr, 4, 4)))
 e <- c("q", "j", "v", as.vector(sapply(choices, substr, 5, 5)))
+f <- unlist(strsplit(choices, ""))
 
 tab <- cbind(table(a),
              table(b),
              table(c),
              table(d),
-             table(e))
+             table(e),
+             table(f))
 
-colnames(tab) <- c("First", "Second", "Third", "Fourth", "Fifth")
+colnames(tab) <- c("First", "Second", "Third", "Fourth", "Fifth", "Combined")
 
 tab.m <- melt(tab)
 tab.m$Var2 <- factor(tab.m$Var2)
@@ -27,7 +32,7 @@ colnames(tab.m) <- c("letter", "position", "frequency")
 
 ggplot(tab.m, aes(x=letter, y = frequency)) +
   geom_bar(stat = "identity", color = "orange", width=0.5) +
-  facet_wrap(~position, ncol = 1) +
+  facet_wrap(~position, ncol = 1, scales = "free") +
   theme_bw() +
-  theme(axis.title = element_text(face="bold"))
+  theme(axis.title = element_text(face="bold"), axis.text=element_text(size=7))
 
